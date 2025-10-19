@@ -1,0 +1,26 @@
+avro==1.12.0
+avro-python3==1.10.2
+certifi==2025.8.3
+charset-normalizer==3.4.3
+idna==3.10
+kafka-python==2.2.15
+markdown-it-py==3.0.0
+mdurl==0.1.2
+oauthlib==3.3.1
+pydoop @ file:///tmp/pip-install-qse4o8q4/pydoop_a27d5654873341d99337ca74e79594be 2.0.0
+Pygments==2.19.2
+requests==2.32.5
+requests-oauthlib==2.0.0
+rich==14.1.0
+tweepy==4.16.0
+urllib3==2.5.0
+
+
+################
+https://mirror.stream.centos.org/9-stream/CRB/x86_64/os/Packages/libtirpc-devel-1.3.3-1.el9.x86_64.rpm
+java-17-openjdk-devel
+java-17-openjdk-headless
+python3-devel
+gcc
+gcc-c++
+hadoop-3.3.6
