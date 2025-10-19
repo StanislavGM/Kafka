@@ -1,0 +1,128 @@
+
+# Print details about serving configuration.
+echo "conf" | nc localhost 2181
+# List full connection/session details for all clients connected to this server. 
+echo "cons" | nc localhost 2181
+# Reset connection/session statistics for all connections.
+echo "crst" | nc localhost 2181
+# Lists the outstanding sessions and ephemeral nodes. This only works on the leader.
+echo "dump" | nc localhost 2181
+# Print details about serving environment
+echo "envi" | nc localhost 2181
+# Tests if server is running in a non-error state.
+echo "ruok" | nc localhost 2181
+# Lists full details for the server.
+echo "srvr" | nc localhost 2181
+# Lists brief details for the server and connected clients.
+echo "stat" | nc localhost 2181
+# Lists brief information on watches for the server.
+echo "wchs" | nc localhost 2181
+# Lists detailed information on watches for the server, by session. This outputs a list of sessions(connections) with associated watches (paths).
+echo "wchc" | nc localhost 2181
+# Lists detailed information on watches for the server, by path. This outputs a list of paths (znodes) with associated sessions.
+echo "wchp" | nc localhost 2181
+# Outputs a list of variables that could be used for monitoring the health of the cluster.
+echo "mntr" | nc localhost 2181
+##########################
+echo "* hard nofile 100000
+* soft nofile 100000" | sudo tee --append /etc/security/limits.conf
+# generate 10KB of random data
+base64 /dev/urandom | head -c 10000 | egrep -ao "\w" | tr -d '\n' > file10KB.txt
+bin/kafka-producer-perf-test.sh --topic fourth_topic --num-records 10000 --throughput 10 --payload-file file10KB.txt --producer-props acks=1 bootstrap.servers=kafka1:9092,kafka2:9092,kafka3:9092 --payload-delimiter A
+
+# bin/zookeeper-shell.sh localhost:2181
+ls /
+create /my-node "foo"
+ls /
+get /my-node
+get /zookeeper
+create /my-node/deeper-node "bar"
+ls /
+ls /my-node
+ls /my-node/deeper-node
+get /my-node/deeper-node
+set /my-node/deeper-node "newdata"
+get /my-node/deeper-node
+# removes are recursive
+rmr /my-node
+# create a watcher
+create /node-to-watch ""
+get /node-to-watch true
+set /node-to-watch "has-changed"
+rmr /node-to-watch
+
+# Starting Kafka Raft
+mkdir /data/kafka-kraft
+# Edit config/kraft/server.properties
+# change lines to 
+# log.dirs=/your/path/to/data/kafka
+# For example
+# log.dirs=/home/cloud_user/kafka_2.13-3.1.0/data/kafka-kraft
+
+# Generate a Kafka UUID
+# This returns a UUID, for example 76BLQI7sT_ql1mBfKsOk9Q 
+kafka-storage.sh random-uuid
+
+# This will format the directory that is in the log.dirs in the config/kraft/server.properties file
+kafka-storage.sh format -t <uuid> -c ~/kafka_2.13-3.1.0/config/kraft/server.properties
+# start Kafka
+kafka-server-start.sh ~/kafka_2.13-3.1.0/config/kraft/server.properties
+
+# Using SASL_SSL
+# example.config file
+security.protocol=SASL_SSL
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="cloud_user" password="Welcome1245";
+sasl.mechanism=PLAIN
+
+kafka-topics.sh --command-config ~/example.config --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092
+kafka-console-producer.sh --producer.config ~/example.config --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic first_topic 
+kafka-console-producer.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic first_topic --property parse.key=true --property key.separator=:
+example key:example value
+cloud_user: value
+
+kafka-console-consumer.sh --consumer.config ~/example.config --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic second_topic --formatter kafka.tools.DefaultMessageFormatter --property print.timestamp=true --property print.key=true --property print.value=true --property print.partition=true --from-beginning
+kafka-console-producer.sh --producer.config ~/example.config --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --producer-property partitioner.class=org.apache.kafka.clients.producer.RoundRobinPartitioner --topic third_topic 
+Message one
+Message two
+Message three
+kafka-console-consumer.sh --consumer.config ~/example.config --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic third_topic --group my-first-application
+kafka-console-consumer.sh --consumer.config ~/example.config --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic third_topic --group my-second-application --from-beginning
+# list consumer groups
+# list consumer groups
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --list
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --describe --group my-first-application
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --describe --group my-second-application
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --describe --group console-consumer-10978
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --group my-first-application --reset-offsets --to-earliest --topic third_topic --dry-run
+kafka-consumer-groups.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --group my-first-application --reset-offsets --to-earliest --topic third_topic --execute # The offset must be 0 after the command execution.
+kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --entity-type topics --entity-name first-topic --add-config min.insync.replicas=2 --alter
+kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --entity-type topics --entity-name configured-topic --describe
+kafka-configs.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --entity-type topics --entity-name first-topic --delete-config min.insync.replicas --alter
+kafka-topics.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --create --topic employee-salary --partitions 1 --replication-factor 1 --config cleanup.policy=compact --config min.cleanable.dirty.ratio=0.001 --config segment.ms=5000
+kafka-console-consumer.sh --bootstrap-server kafka1:9092,kafka2:9092,kafka3:9092 --topic employee_salary --property print.key=true --property key.separator=, --from-beginning
+Patrick,salary: 10000
+Lucy,salary: 20000
+Bob,salary: 20000
+Patrick,salary: 25000
+Lucy,salary: 30000
+Patrick,salary: 30000
+# Result is :
+Bob,salary: 20000
+Lucy,salary: 30000
+Patrick,salary: 30000
+
+connect-standalone.sh config/connect-standalone.properties config/wikimedia.properties
+connect-standalone.sh config/connect-standalone.properties config/elasticsearch.properties
+
+kafka-console-producer.sh --bootstrap-server kafka3:9092 --topic wikimedia.recent.change
+kafka-console-producer.sh --bootstrap-server kafka2:9092 --topic wikimedia.recent.change < wikimedia.txt
+kafka-console-consumer.sh --bootstrap-server 172.31.31.78:8088 --topic wikimedia.recent.change --from-beginning
+kafka-configs.sh --bootstrap-server kafka3:9092 --entity-type topics --entity-name wikimedia.recentchange.connect --alter --add-config min.insync.replicas=1
+kafka-topics.sh --bootstrap-server kafka1:9092 --create --topic employee_salary
+kafka-console-producer.sh --bootstrap-server kafka1:9092 > --topic employee_salary --from-beginning > --property print.key=true --property key.separator=,
+kafka-console-producer.sh --bootstrap-server kafka1:9092 --topic employee_salary --property print.key=true --property key.separator=,
+kafka-console-producer.sh --bootstrap-server kafka1:9092 --topic employee_salary --property parse.key=true --property key.separator=,
+hdfs dfs -tail /kafka_demo/tweets_data_hdfs.json
+hdfs dfs -get /kafka_demo/tweets_data_hdfs.json kafka-2/hadoop/hdfs2reg_file.json
+hadoop fs -ls /kafka_demo
+hadoop fs -touchz /kafka_demo/tweets_data_hdfs.json
