@@ -1,8 +1,6 @@
 DAEMON_PATH=/home/cloud_user/kafka-3/bin
-#DAEMON_PATH=/home/cloud_user/kafka_2.12-3.4.0/bin
 DAEMON_NAME=zookeeper
 ZOOKEEPER_CONFIG=/home/cloud_user/kafka-3/config/zookeeper.properties
-#ZOOKEEPER_CONFIG=/home/cloud_user/kafka_2.12-3.4.0/config/zookeeper.properties
 PATH=$PATH:$DAEMON_PATH
 case "$1" in
   start)#Start the daemon

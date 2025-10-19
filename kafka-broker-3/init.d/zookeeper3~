@@ -1,17 +1,19 @@
-DAEMON_PATH=/home/cloud_user/kafka-2/bin
+DAEMON_PATH=/home/cloud_user/kafka-3/bin
+#DAEMON_PATH=/home/cloud_user/kafka_2.12-3.4.0/bin
 DAEMON_NAME=zookeeper
-ZOOKEEPER_CONFIG=/home/cloud_user/kafka-2/config/zookeeper.properties
+ZOOKEEPER_CONFIG=/home/cloud_user/kafka-3/config/zookeeper.properties
+#ZOOKEEPER_CONFIG=/home/cloud_user/kafka_2.12-3.4.0/config/zookeeper.properties
 PATH=$PATH:$DAEMON_PATH
 case "$1" in
   start)#Start the daemon
-        pid=`ps ax | grep -i 'org.apache.zookeeper' | grep -v grep | awk '{print $1}'`
-        if [ -n "$pid" ]
-        then
-          echo "Zookeeper is already running";
-        else
+#        pid=`ps ax | grep -i 'org.apache.zookeeper' | grep -v grep | awk '{print $1}'`
+#        if [ -n "$pid" ]
+#        then
+#          echo "Zookeeper is already running";
+#        else
           echo "Starting $DAEMON_NAME";
           $DAEMON_PATH/zookeeper-server-start.sh -daemon $ZOOKEEPER_CONFIG
-        fi
+#        fi
         ;;
   stop)
        echo "Shutting down $DAEMON_NAME";
