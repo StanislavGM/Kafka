@@ -1,0 +1,13 @@
+auth:
+  type: DISABLED
+kafka:
+  clusters:
+  - bootstrapServers: kafka1:9092,kafka2:9092,kafka3:9092
+    name: AWS-Kafka
+    properties: {}
+    readOnly: false
+    schemaRegistry: http://172.31.30.196:8077
+rbac:
+  roles: []
+webclient:
+  maxInMemoryBufferSize: 20MB

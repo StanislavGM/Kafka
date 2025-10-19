@@ -1,0 +1,14 @@
+services:
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    network_mode: host
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    restart: always
+    volumes:
+      - ./configs/kafka_ui_dynamic_config.yml:/etc/kafkaui/dynamic_config.yaml

@@ -1,0 +1,34 @@
+organization: # Name of your organization (mandatory)
+  name: "AWS Kafka"
+
+database: # Database credentials, must match what you have in the docker-compose (mandatory)
+  host: "postgresql"
+  port: 5432
+  name: "conduktor-console"
+  username: "conduktor"
+  password: "passwd123"
+
+admin: # Define the local admin for the initial setup (mandatory)
+  email: admin@conduktor.io
+  password: adminP4ss!
+
+auth: # Define a local user (optional)
+  local-users:
+    - email: user@conduktor.io
+      password: userP4ss!
+
+monitoring: # Monitoring settings (optional)
+  cortex-url: http://172.31.30.196:9009/
+  alert-manager-url: http://172.31.30.196:9010/
+  callback-url: http://172.31.30.196:8088/monitoring/api/
+  notifications-callback-url: http://172.31.30.196:8088
+
+clusters: # Cluster and schema registry configuration (optional)
+  - id: my-local-kafka-cluster
+    name: My Local Kafka Cluster
+    bootstrapServers: "172.31.31.246:9092,172.31.31.82:9092,172.31.30.196:9092"
+    schemaRegistry:
+      url: "http://172.31.30.196:8077"
+#    kafkaConnects:
+#      - url: http://kafka-connect:8083
+#        name: full stack kafka connect
