@@ -24,3 +24,4 @@ python3-devel
 gcc
 gcc-c++
 hadoop-3.3.6
+ssh-keygen -t rsa -b 2048 -C "hadoop" && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
